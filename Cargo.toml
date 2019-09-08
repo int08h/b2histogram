@@ -1,0 +1,9 @@
+[package]
+name = "b2histogram"
+description = "An efficient histogram with a compact binary representation and no-std compatibility"
+version = "0.1.0"
+authors = ["Stuart Stock <stuart@int08h.com>"]
+edition = "2018"
+
+
+[dependencies]
