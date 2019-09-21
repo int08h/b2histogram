@@ -74,7 +74,7 @@
 //!
 //! # Overflow Behavior
 //!
-//! Buckets counts **saturate** (reach maximum value and stay there) instead of overflowing or
+//! Bucket counts **saturate** (reach maximum value and stay there) instead of overflowing or
 //! wrapping around.
 //!
 //! # Implementation Details
