@@ -1,9 +1,26 @@
 [package]
 name = "b2histogram"
-description = "An efficient histogram with a compact binary representation and no-std compatibility"
-version = "0.1.0"
+version = "1.0.0"
+description = """
+  A compact and efficient integer histogram with fixed memory footprint,
+  constant runtime performance, and (WIP) compact binary serialization.
+"""
 authors = ["Stuart Stock <stuart@int08h.com>"]
+categories = ["no-std"]
+keywords = ["histogram", "power-2", "no-std"]
+repository = "https://github.com/int08h/b2histogram"
+homepage = "https://github.com/int08h/b2histogram"
+documentation = "https://docs.rs/b2histogram"
+readme = "README.md"
+exclude = [".travis.yml"]
+license = "Apache-2.0"
+license-file = "LICENSE"
 edition = "2018"
 
-
 [dependencies]
+
+[badges]
+travis-ci = { repository = "int08h/b2histogram" }
+
+[features]
+default = []

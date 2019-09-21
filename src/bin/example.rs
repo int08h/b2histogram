@@ -17,7 +17,20 @@ use b2histogram::Base2Histogram;
 fn main() {
     let mut hist = Base2Histogram::new();
 
-    hist.record(11);
+    hist.record(0); // Record a single observation of '0'
+    hist.record(11); // Two observations of '11'
+    hist.record(11); //
+    hist.record_n(300_000, 6); // Six observations of 300,000
 
-    println!("{:?}", hist.bucket_for(11));
+    // Retrieve counts directly
+    println!("Observations for 300,000: {}", hist.observations(300_000));
+
+    // Retrieve the `Bucket` for a given value
+    println!("Bucket corresponding to '11': {:?}", hist.bucket_for(11));
+
+    // Iterate buckets that have observations
+    println!(" start     end   count");
+    for bucket in hist.iter().filter(|b| b.count > 0) {
+        println!("{:6}, {:6}: {:6}", bucket.start, bucket.end, bucket.count);
+    }
 }
