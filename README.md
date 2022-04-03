@@ -2,7 +2,7 @@ b2histogram
 ===========
 
 [![crates.io](https://img.shields.io/crates/v/b2histogram.svg?style=flat-square)](https://crates.io/crates/b2histogram)
-[![Build Status](https://img.shields.io/travis/int08h/b2histogram/master.svg?style=flat-square)](https://travis-ci.org/int08h/b2histogram)
+[![Build Status](https://github.com/int08h/b2histogram/actions/workflows/rust.yml/badge.svg)](https://github.com/int08h/b2histogram/actions/workflows/rust.yml)
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 A fast and efficient 64-bit integer histogram with power-of-2 spaced buckets.
