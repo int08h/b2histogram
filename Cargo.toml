@@ -14,7 +14,6 @@ documentation = "https://docs.rs/b2histogram"
 readme = "README.md"
 exclude = [".travis.yml"]
 license = "Apache-2.0"
-license-file = "LICENSE"
 edition = "2018"
 
 [dependencies]
