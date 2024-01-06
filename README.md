@@ -21,7 +21,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-b2histogram = "1.0"
+b2histogram = "1.0.1"
 ```
 
 and this to your crate root:
