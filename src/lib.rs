@@ -1,4 +1,4 @@
-// Copyright 2019 int08h LLC
+// Copyright 2019-2023 int08h LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@
 //!
 //! # Bucket Ranges
 //!
-//! Buckets cover the range `[2^n, 2^(n+1)-1]` including their start and end values (open-open)
+//! Buckets cover the range `[2^n, 2^(n+1)-1]` including their start and end values (closed-closed)
 //! for all powers of 2 from 0 through 2^62. The bottom-most bucket records observations of
 //! zero and the top-most bucket covers `[2^62, +infinity]`.
 //!
