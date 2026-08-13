@@ -118,7 +118,7 @@ pub struct Base2Histogram {
     mask: u64,
 }
 
-/// A bucket maintains a `count` of observations between its `begin` and `end` endpoints.
+/// A bucket maintains a `count` of observations between its `start` and `end` endpoints.
 ///
 /// Buckets include their endpoint values (known as a "closed-closed" interval). Each
 /// bucket covers `[2^n, (2^(n+1))-1]` with the exception of the top-most bucket which
@@ -235,12 +235,12 @@ impl Base2Histogram {
             }
         } else {
             let shift = (idx - 1) as u32;
-            let begin = u64::saturating_pow(2, shift);
-            let end = if idx == 63 { u64::MAX } else { begin * 2 - 1 };
+            let start = u64::saturating_pow(2, shift);
+            let end = if idx == 63 { u64::MAX } else { start * 2 - 1 };
             let count = self.counts[idx];
 
             Bucket {
-                start: begin,
+                start,
                 end,
                 count,
             }
