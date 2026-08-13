@@ -14,7 +14,6 @@
 
 /// Unit tests for Base2Histogram. Not in `lib.rs` because of `no-std` and these tests
 /// use `println` for diagnostic output.
-
 #[cfg(test)]
 mod test {
     extern crate b2histogram;
@@ -41,21 +40,27 @@ mod test {
     #[test]
     fn buckets_with_counts_are_identified() {
         let mut hist = Base2Histogram::new();
-        let seq: Vec<u64> = [2, 8, 14, 20, 34, 50, 62, 1, 3, 12, 19, 31, 49, 61].iter()
+        let seq: Vec<u64> = [2, 8, 14, 20, 34, 50, 62, 1, 3, 12, 19, 31, 49, 61]
+            .iter()
             .map(|i: &u32| u64::pow(2, *i))
             .collect();
 
         for x in seq {
-            assert_eq!(hist.has_counts(x), false, "false x={}, {:?}", x, hist.bucket_for(x));
+            assert!(
+                !hist.has_counts(x),
+                "false x={}, {:?}",
+                x,
+                hist.bucket_for(x)
+            );
             hist.record(x);
-            assert_eq!(hist.has_counts(x), true, "true x={}, {:?}", x, hist.bucket_for(x));
+            assert!(hist.has_counts(x), "true x={}, {:?}", x, hist.bucket_for(x));
         }
     }
 
     #[test]
     fn observation_counts_are_cumulative() {
         let mut hist = Base2Histogram::new();
-        let value = u32::max_value() as u64;
+        let value = u32::MAX as u64;
 
         hist.record(value);
         assert_eq!(hist.observations(value), 1);
@@ -63,8 +68,29 @@ mod test {
         hist.record_n(value, 9);
         assert_eq!(hist.observations(value), 10);
 
-        hist.record_n(value, u16::max_value() as u64);
-        assert_eq!(hist.observations(value), u16::max_value() as u64 + 10);
+        hist.record_n(value, u16::MAX as u64);
+        assert_eq!(hist.observations(value), u16::MAX as u64 + 10);
+    }
+
+    #[test]
+    fn recording_zero_observations_does_not_mark_a_bucket_nonzero() {
+        let mut hist = Base2Histogram::new();
+
+        hist.record_n(42, 0);
+
+        assert_eq!(hist.observations(42), 0);
+        assert!(!hist.has_counts(42));
+        assert_eq!(hist.nonzero_buckets(), 0);
+    }
+
+    #[test]
+    fn observation_counts_saturate() {
+        let mut hist = Base2Histogram::new();
+
+        hist.record_n(7, u64::MAX);
+        hist.record(7);
+
+        assert_eq!(hist.observations(7), u64::MAX);
     }
 
     #[test]
@@ -130,12 +156,12 @@ mod test {
 
             println!("i {}, val {}, {:?}", i, val, b);
 
-            if i < 63 {
+            if i < 62 {
                 assert_eq!(b.end, val);
                 assert_eq!(b.count, 1);
             } else {
                 // Values over 2^62 (4611686018427387904) accumulate into the same bucket
-                assert_eq!(b.end, u64::saturating_pow(2, 63) - 1);
+                assert_eq!(b.end, u64::MAX);
                 assert_eq!(b.count, i as u64 - 61);
             }
         }
@@ -145,11 +171,11 @@ mod test {
     fn handle_u64_max_value() {
         let mut hist = Base2Histogram::new();
 
-        hist.record(u64::max_value());
-        let b = hist.bucket_for(u64::max_value());
+        hist.record(u64::MAX);
+        let b = hist.bucket_for(u64::MAX);
 
         assert_eq!(b.start, u64::pow(2, 62));
-        assert_eq!(b.end, u64::pow(2, 63) - 1);
+        assert_eq!(b.end, u64::MAX);
         assert_eq!(b.count, 1);
     }
 
@@ -160,23 +186,21 @@ mod test {
         hist.record_n(0, 100);
         for i in 0..63 {
             hist.record_n(u64::pow(2, i), 100);
-        };
+        }
 
-        let mut n = 0;
-        for b in hist.iter() {
+        for (n, b) in hist.iter().enumerate() {
             println!("n={} -> {:?}", n, b);
             if n == 0 || n == 1 {
-                assert_eq!(b.start, n);
-                assert_eq!(b.end, n);
+                assert_eq!(b.start, n as u64);
+                assert_eq!(b.end, n as u64);
                 assert_eq!(b.count, 100);
             } else {
                 let begin = u64::pow(2, n as u32 - 1);
-                let end = begin.saturating_mul(2) - 1;
+                let end = if n == 63 { u64::MAX } else { begin * 2 - 1 };
                 assert_eq!(b.start, begin);
                 assert_eq!(b.end, end);
                 assert_eq!(b.count, 100);
             }
-            n += 1;
         }
     }
 }

@@ -111,7 +111,7 @@
 
 ///
 /// A compact and efficient integer histogram with fixed memory footprint,
-/// constant runtime performance, and very compact binary serialization.
+/// and constant runtime performance.
 ///
 pub struct Base2Histogram {
     counts: [u64; 64],
@@ -134,6 +134,12 @@ pub struct Bucket {
     pub count: u64,
 }
 
+impl Default for Base2Histogram {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Base2Histogram {
     /// Create a new `Base2Histogram` instance
     pub fn new() -> Self {
@@ -152,6 +158,10 @@ impl Base2Histogram {
     /// Record `count` observations of `value`
     #[inline]
     pub fn record_n(&mut self, value: u64, count: u64) {
+        if count == 0 {
+            return;
+        }
+
         let idx = self.index_of(value);
 
         self.counts[idx] = self.counts[idx].saturating_add(count);
@@ -192,7 +202,7 @@ impl Base2Histogram {
     }
 
     /// Iterate through all 64 buckets of the histogram in order (0..63)
-    pub fn iter(&self) -> impl Iterator<Item=Bucket> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = Bucket> + '_ {
         let mut idx = 0;
 
         core::iter::from_fn(move || {
@@ -210,22 +220,30 @@ impl Base2Histogram {
     #[inline]
     fn index_of(&self, value: u64) -> usize {
         match u64::leading_zeros(value) {
-            0 => 63 as usize,
-            clz => (64 - clz) as usize
+            0 => 63,
+            clz => (64 - clz) as usize,
         }
     }
 
     /// Return the `Bucket` at the provided index (index values 0..63)
     fn bucket_at(&self, idx: usize) -> Bucket {
         if idx == 0 {
-            Bucket { start: 0, end: 0, count: self.counts[0] }
+            Bucket {
+                start: 0,
+                end: 0,
+                count: self.counts[0],
+            }
         } else {
             let shift = (idx - 1) as u32;
             let begin = u64::saturating_pow(2, shift);
-            let end = u64::saturating_mul(begin, 2) - 1;
+            let end = if idx == 63 { u64::MAX } else { begin * 2 - 1 };
             let count = self.counts[idx];
 
-            Bucket { start: begin, end, count }
+            Bucket {
+                start: begin,
+                end,
+                count,
+            }
         }
     }
 }

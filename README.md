@@ -53,10 +53,9 @@ fn main() {
 
   // Iterate buckets that have observations
   for bucket in hist.iter().filter(|b| b.count > 0) {
-      println!("({:5}, {:5}): {}", bucket.begin, bucket.end, bucket.count);
+      println!("({:5}, {:5}): {}", bucket.start, bucket.end, bucket.count);
   }
 }
 ```
 
 See the [documentation](https://docs.rs/b2histogram) for more.
-
